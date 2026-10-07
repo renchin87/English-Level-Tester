@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>English Level Test A1–C2</title>
+<style>
+:root {
+  --bg: #f3f4f6;
+  --card: #fff;
+  --ink: #0f172a;
+  --mute: #64748b;
+  --line: #e2e8f0;
+  --bar: #e5e7eb;
+  --fill: #0f172a;
+  --ok: #16a34a;
+  --okbg: #dcfce7;
+  --bad: #dc2626;
+  --badbg: #fee2e2;
+  --chip: #f1f5f9;
+  --shadow: 0 10px 30px rgba(15, 23, 42, .08);
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1220;
+    --card: #162033;
+    --ink: #f1f5f9;
+    --mute: #94a3b8;
+    --line: #2a3750;
+    --bar: #2a3750;
+    --fill: #f1f5f9;
+    --okbg: #14352368;
+    --badbg: #4c1d1d88;
+    --chip: #222f47;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .4);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b1220;
+  --card: #162033;
+  --ink: #f1f5f9;
+  --mute: #94a3b8;
+  --line: #2a3750;
+  --bar: #2a3750;
+  --fill: #f1f5f9;
+  --okbg: #14352368;
+  --badbg: #4c1d1d88;
+  --chip: #222f47;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .4);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; }
+body { display: flex; justify-content: center; padding: 64px 16px 32px; }
+
+#theme { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); right: 14px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--card); box-shadow: var(--shadow); font-size: 20px; cursor: pointer; z-index: 5; }
+.card { width: 100%; max-width: 440px; background: var(--card); border-radius: 28px; box-shadow: var(--shadow); padding: 24px 20px; }
+.top { display: flex; justify-content: space-between; align-items: baseline; font-weight: 600; font-size: 15px; }
+.top span:last-child { color: var(--mute); }
+.bar { height: 8px; background: var(--bar); border-radius: 99px; margin: 12px 0 16px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0%; background: var(--fill); border-radius: 99px; transition: width .5s ease; }
+.meta { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--mute); }
+.chip { background: var(--chip); padding: 5px 12px; border-radius: 99px; font-weight: 600; font-size: 13px; color: var(--ink); }
+h1 { font-size: 30px; margin: 0 0 8px; letter-spacing: -.5px; }
+h2.q { font-size: 20px; line-height: 1.3; margin: 20px 0; letter-spacing: -.3px; }
+.opts { display: grid; gap: 10px; }
+.opt { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 58px; padding: 12px 16px; border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 18px; font-size: 16px; text-align: left; cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s; }
+.opt b { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--chip); display: grid; place-items: center; font-size: 13px; }
+.opt:active { transform: scale(.99); }
+.opt.ok { border-color: var(--ok); background: var(--okbg); }
+.opt.bad { border-color: var(--bad); background: var(--badbg); }
+.opt.ok b { background: var(--ok); color: #fff; }
+.opt.bad b { background: var(--bad); color: #fff; }
+.opt:disabled { cursor: default; opacity: 1; }
+</style>
+</head>
+<body>
+
+<button id="theme" onclick="toggleTheme()">🌙</button>
+
+<div class="card">
+  <div class="top">
+    <span id="level-label">Level A1</span>
+    <span id="progress-text">1 / 5</span>
+  </div>
+  <div class="bar"><i id="progress-bar"></i></div>
+  
+  <div class="meta">
+    <span class="chip" id="category">Grammar</span>
+    <span id="score-text">Score: 0</span>
+  </div>
+
+  <h2 class="q" id="question">Loading question...</h2>
+
+  <div class="opts" id="options"></div>
+</div>
+
+<script>
+const questions = [
+  { level: "A1", category: "Grammar", q: "She ___ a student.", opts: ["is", "are", "am", "be"], ans: 0 },
+  { level: "A2", category: "Vocabulary", q: "They ___ to the cinema yesterday.", opts: ["go", "went", "gone", "going"], ans: 1 },
+  { level: "B1", category: "Grammar", q: "If I ___ more time, I would learn French.", opts: ["have", "had", "will have", "would have"], ans: 1 },
+  { level: "B2", category: "Grammar", q: "He insisted on ___ the bill.", opts: ["pay", "to pay", "paying", "paid"], ans: 2 },
+  { level: "C1", category: "Vocabulary", q: "The decision was made under the ___ of urgency.", opts: ["guise", "guarantee", "aegis", "plausibility"], ans: 0 }
+];
+
+let currentIdx = 0;
+let score = 0;
+
+function loadQuestion() {
+  const q = questions[currentIdx];
+  document.getElementById("level-label").innerText = `Level ${q.level}`;
+  document.getElementById("progress-text").innerText = `${currentIdx + 1} / ${questions.length}`;
+  document.getElementById("progress-bar").style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
+  document.getElementById("category").innerText = q.category;
+  document.getElementById("question").innerText = q.q;
+
+  const optsContainer = document.getElementById("options");
+  optsContainer.innerHTML = "";
+
+  q.opts.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.innerHTML = `<b>${String.fromCharCode(65 + idx)}</b> <span>${opt}</span>`;
+    btn.onclick = () => selectOption(idx, btn);
+    optsContainer.appendChild(btn);
+  });
+}
+
+function selectOption(selectedIdx, btn) {
+  const q = questions[currentIdx];
+  const buttons = document.querySelectorAll(".opt");
+  
+  buttons.forEach(b => b.disabled = true);
+
+  if (selectedIdx === q.ans) {
+    btn.classList.add("ok");
+    score++;
+    document.getElementById("score-text").innerText = `Score: ${score}`;
+  } else {
+    btn.classList.add("bad");
+    buttons[q.ans].classList.add("ok");
+  }
+
+  setTimeout(() => {
+    currentIdx++;
+    if (currentIdx < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }, 1200);
+}
+
+function showResults() {
+  document.querySelector(".card").innerHTML = `
+    <h1>Test Complete!</h1>
+    <p>Your total score is <b>${score} / ${questions.length}</b>.</p>
+    <button class="opt" onclick="location.reload()" style="justify-content:center; background:var(--fill); color:var(--card);">Restart Test</button>
+  `;
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  document.getElementById("theme").innerText = next === "dark" ? "☀️" : "🌙";
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
